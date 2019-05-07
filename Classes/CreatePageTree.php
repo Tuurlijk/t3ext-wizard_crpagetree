@@ -22,11 +22,6 @@ use TYPO3\CMS\Frontend\Page\PageRepository;
 
 /**
  * Creates the "Create pagetree" wizard
- *
- * Old module for TYPO3 6.2, 7.6 and 8.7
- *
- * @package TYPO3
- * @subpackage tx_wizardcrpagetree
  */
 class CreatePageTree extends AbstractFunctionModule
 {
