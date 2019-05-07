@@ -35,6 +35,8 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
 /**
  * "Create page tree" controller
  *
+ * New style module for TYPO3 9.5
+ *
  * @internal This class is a specific Backend controller implementation and is not considered part of the Public TYPO3 API.
  */
 class NewPagetreeController
