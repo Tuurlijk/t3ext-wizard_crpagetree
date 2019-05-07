@@ -18,6 +18,7 @@ namespace MichielRoos\WizardCrpagetree;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
+use TYPO3\CMS\Backend\Tree\View\BrowseTreeView;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -138,6 +139,23 @@ class NewPagetreeController
             } else {
                 $hasNewPagesData = false;
             }
+
+            // Display result:
+            $tree = GeneralUtility::makeInstance(BrowseTreeView::class);
+            $tree->init(' AND pages.doktype < 199 AND pages.hidden = "0"');
+            $tree->thisScript = '#';
+            $tree->ext_IconMode = true;
+            $tree->expandAll = true;
+
+            $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+//            $tree->tree[] = [
+//                'row'  => $pageRecord,
+//                'HTML' => $iconFactory->getIconForRecord('pages', [$pageUid], Icon::SIZE_SMALL)->render()
+//            ];
+            $tree->getTree($pageUid);
+
+            $view->assign('createdPages', $tree->printTree());
+
             $view->assign('hasNewPagesData', $hasNewPagesData);
         }
 
@@ -279,7 +297,7 @@ class NewPagetreeController
      *
      * @return   array      the data as a compressed array
      */
-    private function compressArray($data)
+    private function compressArray($data): array
     {
         $newData = [];
         foreach ($data as $value) {
@@ -303,7 +321,7 @@ class NewPagetreeController
      *
      * @return   array      the data as a nested array
      */
-    private function getArray($data, $oldLevel = 0, $character = ' ')
+    private function getArray($data, $oldLevel = 0, $character = ' '): array
     {
         $size = count($data);
         $newData = [];
@@ -339,7 +357,7 @@ class NewPagetreeController
                     }
                     $newData[$i - 1]['data'] = $this->getArray($subData, $level, $character);
                     $i = $i + count($subData);
-                } elseif (($level == 0) or ($level === $oldLevel)) {
+                } elseif (($level === 0) or ($level === $oldLevel)) {
                     $newData[$i]['value'] = $v;
                     $i++;
                 }
@@ -360,7 +378,7 @@ class NewPagetreeController
      *
      * @return   array      the data reversed
      */
-    private function reverseArray($data)
+    private function reverseArray($data): array
     {
         $newData = [];
         $index = 0;
@@ -384,17 +402,17 @@ class NewPagetreeController
      *
      * @return   array      the data reversed
      */
-    private function filterComments($data)
+    private function filterComments($data): array
     {
         $newData = [];
         $multiLine = false;
         foreach ($data as $value) {
             // Multiline comment
-            if (preg_match('#^/\*#', $value) && !$multiLine) {
+            if (!$multiLine && preg_match('#^/\*#', $value)) {
                 $multiLine = true;
                 continue;
             }
-            if (preg_match('#[\*]+/#', ltrim($value)) && $multiLine) {
+            if ($multiLine && preg_match('#[\*]+/#', ltrim($value))) {
                 $multiLine = false;
                 continue;
             }
@@ -423,7 +441,7 @@ class NewPagetreeController
      *
      * @return   string      the indentation character
      */
-    private function getIndentationChar()
+    private function getIndentationChar(): string
     {
         $character = $this->request->getParsedBody()['indentationCharacter'];
         switch ($character) {
@@ -447,7 +465,7 @@ class NewPagetreeController
      *
      * @return   string      the separation character
      */
-    private function getSeparationChar()
+    private function getSeparationChar(): string
     {
         $character = $this->request->getParsedBody()['separationCharacter'];
         switch ($character) {
@@ -474,7 +492,7 @@ class NewPagetreeController
      *
      * @return   array      the extra fields
      */
-    private function getExtraFields()
+    private function getExtraFields(): array
     {
         $efLine = $this->request->getParsedBody()['extraFields'];
         if (trim($efLine)) {
@@ -489,7 +507,7 @@ class NewPagetreeController
      *
      * @return LanguageService
      */
-    protected function getLanguageService()
+    protected function getLanguageService(): LanguageService
     {
         return $GLOBALS['LANG'];
     }
@@ -499,7 +517,7 @@ class NewPagetreeController
      *
      * @return BackendUserAuthentication
      */
-    protected function getBackendUser()
+    protected function getBackendUser(): BackendUserAuthentication
     {
         return $GLOBALS['BE_USER'];
     }
