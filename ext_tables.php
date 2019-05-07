@@ -1,6 +1,5 @@
 <?php
-
-defined('TYPO3_MODE') || die('¯\_(ツ)_/¯');
+defined('TYPO3_MODE') || die('( ͡ಠ ʖ̯ ͡ಠ)╭∩╮');
 
 if (TYPO3_MODE === 'BE') {
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::insertModuleFunction(
