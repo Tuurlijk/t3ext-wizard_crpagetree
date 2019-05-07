@@ -1,22 +1,19 @@
-<?php
-namespace MichielRoos\WizardCrpagetree;
+<?php declare(strict_types=1);
 
-/*
- * This file is part of the TYPO3 CMS project.
+/***
  *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
+ * This file is part of the "wizard_crpagetree" extension for TYPO3.
  *
  * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
+ * LICENSE file that was distributed with this source code.
  *
- * The TYPO3 project - inspiring people to share!
- */
+ ***/
 
+namespace MichielRoos\WizardCrpagetree;
+
+use TYPO3\CMS\Backend\Module\AbstractFunctionModule;
 use TYPO3\CMS\Backend\Tree\View\BrowseTreeView;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Backend\Utility\IconUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
@@ -31,7 +28,7 @@ use TYPO3\CMS\Frontend\Page\PageRepository;
  * @package TYPO3
  * @subpackage tx_wizardcrpagetree
  */
-class CreatePageTree extends \TYPO3\CMS\Backend\Module\AbstractFunctionModule
+class CreatePageTree extends AbstractFunctionModule
 {
     /**
      * Main function creating the content for the module.
@@ -64,7 +61,6 @@ class CreatePageTree extends \TYPO3\CMS\Backend\Module\AbstractFunctionModule
 
                     $ic = $this->getIndentationChar();
                     $sc = $this->getSeparationChar();
-                    $ef = $this->getExtraFields();
 
                     // Reverse the ordering of the data
                     $originalData = $this->getArray($data, 0, $ic);
@@ -107,10 +103,8 @@ class CreatePageTree extends \TYPO3\CMS\Backend\Module\AbstractFunctionModule
                                 array_shift($parts);
 
                                 // Add additional field values
-                                if ($ef) {
-                                    foreach ($ef as $index => $field) {
-                                        $pageTree['pages']['NEW' . $pageIndex][$field] = $parts[$index];
-                                    }
+                                foreach ($this->getExtraFields() as $index => $field) {
+                                    $pageTree['pages']['NEW' . $pageIndex][$field] = $parts[$index];
                                 }
                                 $oldLevel = $level;
                                 $pageIndex++;
@@ -139,20 +133,11 @@ class CreatePageTree extends \TYPO3\CMS\Backend\Module\AbstractFunctionModule
                     $tree->ext_IconMode = true;
                     $tree->expandAll = true;
 
-                    if (version_compare(TYPO3_branch, '6.2', '>')) {
-                        $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-                        $tree->tree[] = [
-                            'row'  => $pRec,
-                            'HTML' => $iconFactory->getIconForRecord('pages', [$thePid], Icon::SIZE_SMALL)->render()
-                        ];
-                    }
-                    if (version_compare(TYPO3_branch, '6.2', '=')) {
-                        $tree->setTreeName('pageTree');
-                        $tree->tree[] = [
-                            'row'  => $pRec,
-                            'HTML' => IconUtility::getSpriteIconForRecord('pages', $pRec)
-                        ];
-                    }
+                    $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+                    $tree->tree[] = [
+                        'row'  => $pRec,
+                        'HTML' => $iconFactory->getIconForRecord('pages', [$thePid], Icon::SIZE_SMALL)->render()
+                    ];
                     $tree->getTree($thePid);
 
                     $theCode .= $this->getLanguageLabel('created');
@@ -345,7 +330,7 @@ class CreatePageTree extends \TYPO3\CMS\Backend\Module\AbstractFunctionModule
                             ' . $this->getLanguageLabel('howto') . '
                         </label>
                         <div class="form-control-wrap">
-                            <textarea class="form-control" id="data" name="data"' . $this->pObj->doc->formWidth(35) . ' rows="8"/></textarea>
+                            <textarea class="form-control" id="wiz_newPageTree_data" name="data" ' . $this->pObj->doc->formWidth(35) . ' rows="8"/></textarea>
                         </div>
                     </div>
                 </div>
@@ -447,16 +432,16 @@ class CreatePageTree extends \TYPO3\CMS\Backend\Module\AbstractFunctionModule
     /**
      * Get the extra fields
      *
-     * @return   array      the extra fields
+     * @return array The extra fields
      */
-    private function getExtraFields()
+    private function getExtraFields() : array
     {
         $efLine = GeneralUtility::_POST('extraFields');
         if (trim($efLine)) {
             return GeneralUtility::trimExplode(' ', $efLine, 1);
         }
 
-        return false;
+        return [];
     }
 
     /**
@@ -478,6 +463,6 @@ class CreatePageTree extends \TYPO3\CMS\Backend\Module\AbstractFunctionModule
      */
     public function helpBubble()
     {
-        return '<img src="' . $GLOBALS['BACK_PATH'] . 'gfx/helpbubble.gif" width="14" height="14" hspace="2" align="top"' . $this->pObj->doc->helpStyle() . ' alt="" />';
+        return '<img src="' . $GLOBALS['BACK_PATH'] . 'gfx/helpbubble.gif" width="14" height="14" hspace="2" align="top" alt="" />';
     }
 }
