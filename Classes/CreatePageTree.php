@@ -466,7 +466,7 @@ class CreatePageTree extends \TYPO3\CMS\Backend\Module\AbstractFunctionModule
      */
     private function getLanguageLabel($label)
     {
-        return $GLOBALS['LANG']->sL('LLL:EXT:wizard_crpagetree/Resources/Private/Language/locallang.xml:' . $label);
+        return $GLOBALS['LANG']->sL('LLL:EXT:wizard_crpagetree/Resources/Private/Language/locallang.xlf:' . $label);
     }
 
     /**
