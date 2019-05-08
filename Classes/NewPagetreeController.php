@@ -2,19 +2,6 @@
 declare(strict_types=1);
 namespace MichielRoos\WizardCrpagetree;
 
-/*
- * This file is part of the TYPO3 CMS project.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * The TYPO3 project - inspiring people to share!
- */
-
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
@@ -34,11 +21,10 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
- * "Create page tree" controller
+ * "New page tree" controller
  *
- * New style module for TYPO3 9.5
+ * Fluid template based backend module for TYPO3 9.5
  *
- * @internal This class is a specific Backend controller implementation and is not considered part of the Public TYPO3 API.
  */
 class NewPagetreeController
 {
@@ -297,7 +283,7 @@ class NewPagetreeController
      *
      * @return   array      the data as a compressed array
      */
-    private function compressArray($data): array
+    private function compressArray(array $data): array
     {
         $newData = [];
         foreach ($data as $value) {
@@ -321,7 +307,7 @@ class NewPagetreeController
      *
      * @return   array      the data as a nested array
      */
-    private function getArray($data, $oldLevel = 0, $character = ' '): array
+    private function getArray(array $data, int $oldLevel = 0, $character = ' '): array
     {
         $size = count($data);
         $newData = [];
@@ -378,7 +364,7 @@ class NewPagetreeController
      *
      * @return   array      the data reversed
      */
-    private function reverseArray($data): array
+    private function reverseArray(array $data): array
     {
         $newData = [];
         $index = 0;
@@ -402,7 +388,7 @@ class NewPagetreeController
      *
      * @return   array      the data reversed
      */
-    private function filterComments($data): array
+    private function filterComments(array $data): array
     {
         $newData = [];
         $multiLine = false;
@@ -496,7 +482,7 @@ class NewPagetreeController
     {
         $efLine = $this->request->getParsedBody()['extraFields'];
         if (trim($efLine)) {
-            return GeneralUtility::trimExplode(' ', $efLine, 1);
+            return GeneralUtility::trimExplode(' ', $efLine, true);
         }
 
         return [];
